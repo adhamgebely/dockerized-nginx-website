@@ -5,7 +5,7 @@
   <img src="https://img.shields.io/badge/Nginx-Web%20Server-009639?logo=nginx&logoColor=white" alt="Nginx">
 </p>
 
-A simple DevOps project that demonstrates how to serve a static website using **Nginx inside a Docker container** and publish the Docker image to **Docker Hub**.
+A simple DevOps project that demonstrates how to serve a static website using **Nginx inside a Docker container**, expose it through a host port, and publish the Docker image to **Docker Hub**.
 
 ---
 
@@ -15,7 +15,7 @@ A simple DevOps project that demonstrates how to serve a static website using **
   <img src="screenshots/Architecture.png" width="850" alt="Project Architecture">
 </p>
 
-```text id="jg9b3r"
+```text
 Website Files → Docker Image → Nginx Container → Browser → Docker Hub
 ```
 
@@ -23,19 +23,19 @@ Website Files → Docker Image → Nginx Container → Browser → Docker Hub
 
 ## 🛠 Technologies
 
-* Docker
-* Nginx
-* Git & GitHub
-* Docker Hub
-* HTML / CSS / JavaScript
+- Docker
+- Nginx
+- Git & GitHub
+- Docker Hub
+- HTML / CSS / JavaScript
 
 ---
 
 ## ✅ Prerequisites
 
-Make sure Git and Docker are installed:
+Make sure **Git** and **Docker** are installed:
 
-```bash id="d004dy"
+```bash
 git --version
 docker --version
 ```
@@ -44,19 +44,18 @@ docker --version
 
 ## 📥 Clone the Repository
 
-```bash id="kvf0z5"
-git clone https://github.com/adhamgebely/nginx-website.git
-```
-
-```bash id="twabzs"
-cd nginx-website
+```bash
+git clone https://github.com/adhamgebely/dockerized-nginx-website.git
+cd dockerized-nginx-website
 ```
 
 ---
 
 ## 🐳 Dockerfile
 
-```dockerfile id="v5ct6y"
+The project uses the official Nginx image:
+
+```dockerfile
 FROM nginx
 
 COPY ./Course-Docker/sample-website /usr/share/nginx/html/
@@ -70,23 +69,47 @@ EXPOSE 80
 
 The Dockerfile:
 
-* Uses the official Nginx image.
-* Copies the static website into the Nginx web directory.
-* Exposes port `80`.
+- Uses the official **Nginx** image.
+- Copies the static website files into the Nginx web directory.
+- Exposes port `80`.
 
-> Make sure `Course-Docker/sample-website` exists inside the Docker build context before building the image.
+> [!IMPORTANT]
+> The current Dockerfile expects the website files to exist at:
+>
+> ```text
+> Course-Docker/sample-website
+> ```
+>
+> Make sure this directory exists inside the Docker build context before building the image.
+
+The expected build context should look like:
+
+```text
+dockerized-nginx-website/
+├── Course-Docker/
+│   └── sample-website/
+│       ├── index.html
+│       ├── css/
+│       ├── js/
+│       └── ...
+├── screenshots/
+├── Dockerfile
+└── README.md
+```
 
 ---
 
 ## 🏗 Build the Docker Image
 
-```bash id="g5n57i"
+Build the image:
+
+```bash
 docker build -t website .
 ```
 
-Check the image:
+Check that the image was created:
 
-```bash id="ogfhle"
+```bash
 docker images
 ```
 
@@ -98,13 +121,15 @@ docker images
 
 ## ▶️ Run the Container
 
-```bash id="pt0qjg"
+Run the website container and map host port `3000` to Nginx port `80`:
+
+```bash
 docker run -d --rm -p 3000:80 --name web website
 ```
 
 Check the running container:
 
-```bash id="7dyi6k"
+```bash
 docker ps
 ```
 
@@ -114,19 +139,21 @@ docker ps
 
 ---
 
-## 🌐 Open the Website
+## 🌐 Access the Website
 
-For a local machine:
+If Docker is running on your local machine, open:
 
-```text id="n36obt"
+```text
 http://localhost:3000
 ```
 
-For a remote server:
+If Docker is running on a remote server or cloud VM, open:
 
-```text id="6gkj12"
+```text
 http://YOUR_SERVER_PUBLIC_IP:3000
 ```
+
+> Make sure port `3000` is allowed by the server firewall or cloud security group.
 
 <p align="center">
   <img src="screenshots/browser.png" width="850" alt="Website Running">
@@ -136,25 +163,25 @@ http://YOUR_SERVER_PUBLIC_IP:3000
 
 ## ☁️ Push to Docker Hub
 
-Login:
+Login to Docker Hub:
 
-```bash id="ppid1m"
+```bash
 docker login
 ```
 
 Tag the image:
 
-```bash id="59nu2o"
-docker tag website:latest YOUR_DOCKERHUB_USERNAME/nginx-website:latest
+```bash
+docker tag website:latest YOUR_DOCKERHUB_USERNAME/dockerized-nginx-website:latest
 ```
 
-Push the image:
+Push it:
 
-```bash id="1v617y"
-docker push YOUR_DOCKERHUB_USERNAME/nginx-website:latest
+```bash
+docker push YOUR_DOCKERHUB_USERNAME/dockerized-nginx-website:latest
 ```
 
-> Replace `YOUR_DOCKERHUB_USERNAME` with your Docker Hub username.
+> Replace `YOUR_DOCKERHUB_USERNAME` with your own Docker Hub username.
 
 ### Docker Hub
 
@@ -170,21 +197,21 @@ docker push YOUR_DOCKERHUB_USERNAME/nginx-website:latest
 
 ## 📦 Pull and Run from Docker Hub
 
-Pull the image:
+Anyone can pull the published image using:
 
-```bash id="sc33an"
-docker pull YOUR_DOCKERHUB_USERNAME/nginx-website:latest
+```bash
+docker pull YOUR_DOCKERHUB_USERNAME/dockerized-nginx-website:latest
 ```
 
-Run it:
+Then run it:
 
-```bash id="ijtu4b"
-docker run -d --rm -p 3000:80 --name web YOUR_DOCKERHUB_USERNAME/nginx-website:latest
+```bash
+docker run -d --rm -p 3000:80 --name web YOUR_DOCKERHUB_USERNAME/dockerized-nginx-website:latest
 ```
 
-Then open:
+Open:
 
-```text id="soic6f"
+```text
 http://localhost:3000
 ```
 
@@ -194,38 +221,36 @@ http://localhost:3000
 
 Check running containers:
 
-```bash id="18bymz"
+```bash
 docker ps
 ```
 
-View logs:
+View container logs:
 
-```bash id="3o96mm"
+```bash
 docker logs web
 ```
 
 Stop the container:
 
-```bash id="mkyrhw"
+```bash
 docker stop web
 ```
 
-Remove a container manually:
+Remove the container manually if needed:
 
-```bash id="94zve9"
+```bash
 docker rm -f web
 ```
 
 ---
 
-## 📁 Project Structure
+## 📁 Repository Structure
 
-```text id="cww3p6"
+```text
 dockerized-nginx-website/
-│
 ├── Dockerfile
 ├── README.md
-│
 └── screenshots/
     ├── Architecture.png
     ├── Dockerfile.png
